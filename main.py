@@ -2,7 +2,8 @@
 import os
 import jinja2
 import webapp2
-
+from google.appengine.api import users
+from models import Message
 
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir), autoescape=False)
@@ -26,11 +27,76 @@ class BaseHandler(webapp2.RequestHandler):
         template = jinja_env.get_template(view_filename)
         return self.response.out.write(template.render(params))
 
+    def login_user(self):
+        anonimous = "Anonimous"
+        current_user = users.get_current_user()
+
+        context = {
+            "logged_in": False,
+            "login_url": users.create_login_url('/'),
+            "user": anonimous,
+            "active_tab": None,
+        }
+
+        if current_user:
+            context['logged_in'] = True
+            context['logout_url'] = users.create_logout_url('/')
+            context['user'] = current_user
+
+        return context
+
 
 class MainHandler(BaseHandler):
     def get(self):
-        return self.render_template("hello.html")
+        context = self.login_user()
+        return self.render_template("hello.html", params=context)
+
+
+class MessageReceivedHandler(BaseHandler):
+    def get(self):
+        context = self.login_user()
+        context['active_tab'] = "received"
+        return self.render_template("message_list_received.html", params=context)
+
+    def post(self):
+        context = self.login_user()
+        context['active_tab'] = "received"
+        return self.render_template("message_list_received.html", params=context)
+
+
+class MessageEnviedHandler(BaseHandler):
+    def get(self):
+        context = self.login_user()
+        context['active_tab'] = "envied"
+        return self.render_template("message_list_envied.html", params=context)
+
+    def post(self):
+        context = self.login_user()
+        context['active_tab'] = "envied"
+        return self.render_template("message_list_envied.html", params=context)
+
+
+class MessageDeletedHandler(BaseHandler):
+    def get(self):
+        context = self.login_user()
+        context['active_tab'] = "deleted"
+        return self.render_template("message_list_deleted.html", params=context)
+
+    def post(self):
+        context = self.login_user()
+        context['active_tab'] = "deleted"
+        return self.render_template("message_list_deleted.html", params=context)
+
+
+class HomeListHandler(BaseHandler):
+    def get(self):
+        return self.render_template("message_list.html")
+
 
 app = webapp2.WSGIApplication([
     webapp2.Route('/', MainHandler),
+    webapp2.Route('/home', HomeListHandler),
+    webapp2.Route('/received', MessageReceivedHandler),
+    webapp2.Route('/envied', MessageEnviedHandler),
+    webapp2.Route('/deleted', MessageDeletedHandler),
 ], debug=True)
