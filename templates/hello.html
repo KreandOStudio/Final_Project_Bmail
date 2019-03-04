@@ -21,7 +21,9 @@
                 <i><span class="icon"><img alt="weather" src="/assets/img/bad-weather.png"></span></i>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{{ logout_url }}"><img alt="LogOut {{ user.nickname() }}" src="/assets/img/ninja-portrait32px.png"></a>
+                <a class="nav-link" href="{{ logout_url }}">
+                    <img alt="LogOut | {{ user.nickname() }}" src="/assets/img/email-out24px.png">
+                </a>
               </li>
             </ul>
         </div>
@@ -32,7 +34,7 @@
     {% if logged_in %}
         <h1 class="display-1 text-muted text-center">Hello, {{ user.nickname() }}</h1>
         <div class="text-center">
-            <img class="text-center" alt="Imagen Inicio" src="/assets/img/ninja-portrait128px.png">
+            <img class="text-center" alt="Imagen Inicio" src="/assets/img/Ninha.png"> <!-- ninja-portrait128px -->
         </div>
         <br>
         <form method="get" action="/received">
@@ -50,8 +52,13 @@
 
     {% else %}
         <h1 class="display-1 text-muted text-center">Hello, Anonymous!</h1>
-        <p class="text-muted text-center">
-            Please login here:  <a href="{{ login_url }}" class="text-reset">Login</a>.
-        </p>
+        <div class="text-center">
+            <p class="text-muted text-center">
+                Please login here:
+            </p>
+            <a href="{{ login_url }}" class="text-center">
+                <img alt="Login user." src="/assets/img/Ninja.png">
+            </a>
+        </div>
     {% endif %}
 {% endblock main_content %}
