@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import os
+import json
 import jinja2
 import webapp2
-from google.appengine.api import users
+from google.appengine.api import users, urlfetch
 from models import Message
 
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
@@ -30,18 +31,31 @@ class BaseHandler(webapp2.RequestHandler):
     def login_user(self):
         anonimous = "Anonimous"
         current_user = users.get_current_user()
+        city = "Malaga"
+        units = "metric"
+        app_key = "43c8c964c71bd02c560bbfa96324a59e"  # enter your own API key from OpenWeatherMap API (openweathermap.org/api)
+
+        url = "http://api.openweathermap.org/data/2.5/weather?q={}&units={}&appid={}".format(city, units, app_key)
+
+        result = urlfetch.fetch(url)
+
+        weather_info = json.loads(result.content)
+
+        # params = {"weather_info": weather_info}
 
         context = {
             "logged_in": False,
             "login_url": users.create_login_url('/'),
             "user": anonimous,
             "active_tab": None,
+            "weather_info": None,
         }
 
         if current_user:
             context['logged_in'] = True
             context['logout_url'] = users.create_logout_url('/')
             context['user'] = current_user
+            context['weather_info'] = weather_info
 
         return context
 
